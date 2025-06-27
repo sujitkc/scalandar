@@ -127,7 +127,9 @@ abstract class Month(month : Int, year : Int) {
   val dayStrings = days.map(d => d.toString())
   val dayPanels = emptyDayPanels ++ dayStrings.map(strday => new HorizontalPanel(List(new StringPanel(strday), emptyPanel)))
 
-  def panel() : Panel
+  def panel() = new VerticalPanel(List(new StringPanel("     " + monthName()), datePanel()))
+  def datePanel() : Panel
+  def monthName() = Utils.monthName(month)
 
   override def toString() = panel.toString
 }
@@ -141,12 +143,12 @@ class Month_weekV(month : Int, year : Int) extends Month(month, year) {
   val weekdayPanel = new VerticalPanel(allHeaders)
   val panelsByWeek = dayPanels.grouped(7).toList.map(l => new VerticalPanel(l))
 
-  override def panel() = new HorizontalPanel(weekdayPanel :: emptyPanel :: panelsByWeek)
+  override def datePanel() = new HorizontalPanel(weekdayPanel :: emptyPanel :: panelsByWeek)
 }
 
 class Month_7_1(month : Int, year : Int) extends Month(month, year) {
 
-  override def panel() = {
+  override def datePanel() = {
     val allHeaders = 
       List(
         sundayHeader, mondayHeader, tuesdayHeader, wednesdayHeader,
@@ -162,13 +164,13 @@ class Month_7_1(month : Int, year : Int) extends Month(month, year) {
         sundayHeader, mondayHeader, tuesdayHeader, wednesdayHeader,
         thursdayHeader, fridayHeader, saturdayHeader)
     val vpanels = allHeaders.zip(dayPanels)
-                    .map(t =>
-                          t match {
-                            case (headerPanel : Panel, dayPanel : Panel) => List(headerPanel, dayPanel)
-                            case _ => throw new Exception("Something wrong in the panels.")
-                          }
-                        )
-                    .map(l => new VerticalPanel(l))
+       .map(t =>
+             t match {
+               case (headerPanel : Panel, dayPanel : Panel) => List(headerPanel, dayPanel)
+               case _ => throw new Exception("Something wrong in the panels.")
+             }
+           )
+       .map(l => new VerticalPanel(l))
     val gap = new StringPanel(" ")
     val vpanelsWithGaps = vpanels.map(panel => new HorizontalPanel(List(panel, gap)))
     val allDaysPanel = new HorizontalPanel(vpanelsWithGaps)
@@ -178,7 +180,7 @@ class Month_7_1(month : Int, year : Int) extends Month(month, year) {
 
 class Month_1_7(month : Int, year : Int) extends Month(month, year) {
 
-  override def panel() = {
+  override def datePanel() = {
     val allHeaders = 
       List(
         sundayHeader, mondayHeader, tuesdayHeader, wednesdayHeader,
